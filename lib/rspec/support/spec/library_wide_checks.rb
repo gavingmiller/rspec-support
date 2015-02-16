@@ -64,7 +64,7 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
               :lib_file_results, :spec_file_results
 
   before(:context) do
-    @loaded_features_outfile = File.join(".", "loaded_features.txt")
+    @loaded_features_outfile = File.join(Dir.pwd, "loaded_features.txt")
     @all_lib_files           = files_to_require_for("lib")
     @lib_test_env_files      = all_lib_files.grep(consider_a_test_env_file)
 
@@ -75,7 +75,7 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
     ].map(&:join).map(&:value)
   end
 
-  after(:context) { File.delete(loaded_features_outfile) }
+  after(:context) { File.delete(loaded_features_outfile) if File.exist?(loaded_features_outfile) }
 
   def have_successful_no_warnings_output
     eq ["", "", 0]
@@ -90,7 +90,7 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
   end
 
   it 'only loads a known set of stdlibs so gem authors are forced ' \
-     'to load libs they use to have passing specs', :slow, :failing_on_appveyor do
+     'to load libs they use to have passing specs', :slow do 
     loaded_features = File.read(loaded_features_outfile).split("\n")
     if RUBY_VERSION == '1.8.7'
       # On 1.8.7, $" returns the relative require path if that was used
