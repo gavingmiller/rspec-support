@@ -48,7 +48,7 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
     preamble  = ['orig_loaded_features = $".dup', preamble_for_lib]
     postamble = [
       'loaded_features = ($" - orig_loaded_features).join("\n")',
-      "File.open('#{loaded_features_outfile}', 'w') { |f| f.write(loaded_features) }"
+      "File.open('#{loaded_features_outfile}', 'w+') { |f| f.write(loaded_features) }"
     ]
 
     load_all_files(files, preamble, postamble)
@@ -64,6 +64,10 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
               :lib_file_results, :spec_file_results
 
   before(:context) do
+    if RSpec::Support::OS.windows?
+      puts Dir.pwd
+      puts `dir`
+    end
     @loaded_features_outfile = File.join(Dir.pwd, "loaded_features.txt")
     @all_lib_files           = files_to_require_for("lib")
     @lib_test_env_files      = all_lib_files.grep(consider_a_test_env_file)
@@ -90,7 +94,7 @@ RSpec.shared_examples_for "library wide checks" do |lib, options|
   end
 
   it 'only loads a known set of stdlibs so gem authors are forced ' \
-     'to load libs they use to have passing specs', :slow do 
+     'to load libs they use to have passing specs', :slow do
     loaded_features = File.read(loaded_features_outfile).split("\n")
     if RUBY_VERSION == '1.8.7'
       # On 1.8.7, $" returns the relative require path if that was used

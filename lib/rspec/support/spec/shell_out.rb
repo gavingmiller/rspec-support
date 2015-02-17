@@ -49,6 +49,10 @@ module RSpec
         # they are set to non-default values.
         with_env 'RUBY_GC_HEAP_FREE_SLOTS' => nil, 'RUBY_GC_MALLOC_LIMIT' => nil,
                  'RUBY_FREE_MIN' => nil do
+          if OS.windows?
+            # because debug
+            puts command.inspect
+          end
           shell_out(*command)
         end
       end
