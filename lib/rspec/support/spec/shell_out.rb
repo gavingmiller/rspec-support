@@ -51,6 +51,7 @@ module RSpec
                  'RUBY_FREE_MIN' => nil do
           if OS.windows?
             # because debug
+            puts "Debugging command run"
             puts command.inspect
           end
           shell_out(*command)
